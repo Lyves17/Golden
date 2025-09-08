@@ -1,7 +1,4 @@
-<?php
-$con=mysqli_connect("localhost","root","","web_programming");
-if(!$con){
-    die("Connection Failed");
-}
-
-?>
+$servername = "mysql-goldenaxe.alwaysdata.net"; // toujours cette forme pour AlwaysData
+$username   = "goldenaxe";                     // ton utilisateur MySQL
+$password   = "H95yks@uCXeqSiJ";             // mot de passe MySQL
+$dbname     = "goldenaxe_db";             // nom complet de la base
