@@ -1,16 +1,22 @@
-<?php
+<<?php
 session_start();
+
+// Test affichage de la session
+var_dump($_SESSION);
+exit; // ← TEMPORAIRE, uniquement pour debug
+
 include 'conn.php'; // Connexion à la base
 include 'number_fomt.php';
 include 'strength.php';
 
-if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     $_SESSION["status"] = "Please login your account here";
-    $_SESSION["code"] = "warning";
+    $_SESSION["code"]   = "warning";
     header("location: index.php");
     exit;
 }
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
