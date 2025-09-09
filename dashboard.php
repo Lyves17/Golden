@@ -1,8 +1,10 @@
-<<?php
-session_start();
-
-// Test affichage de la session
-var_dump($_SESSION);
+<?php
+\1
+// --- Optional: enable step-by-step debug ---
+// if (file_exists(__DIR__ . '/debug_bootstrap.php')) {
+//     require __DIR__ . '/debug_bootstrap.php';
+//     DebugBootstrap::init();
+// }
 exit; // ← TEMPORAIRE, uniquement pour debug
 
 include 'conn.php'; // Connexion à la base
@@ -586,7 +588,7 @@ html {
                             $sql="SELECT c.* , p.* FROM users c,emp_details p WHERE c.id=p.id and c.role='Employee' ORDER BY p.hier_date DESC";
                         }
                         $result = mysqli_query($con,$sql);
-                        $num = (mysqli_query($con,$sql));
+                        $num = mysqli_num_rows($result);
                       ?>
                       <thead>
                         <tr style="text-align: center;">
@@ -647,7 +649,7 @@ html {
                        <?php
                         $sql="SELECT c.* , p.* FROM accounts_info c,accountsholder p WHERE c.account=p.account ORDER BY c.registerdate DESC";
                         $result = mysqli_query($con,$sql);
-                        $num = (mysqli_query($con,$sql));
+                        $num = mysqli_num_rows($result);
                       ?>
                       <thead>
                         <tr style="text-align: center;">
@@ -716,7 +718,7 @@ html {
                        <?php
                         $sql="SELECT c.* , p.* FROM accountsholder c,account_history p WHERE c.account=p.account ORDER BY no DESC";
                         $result = mysqli_query($con,$sql);
-                        $num = (mysqli_query($con,$sql));
+                        $num = mysqli_num_rows($result);
                       ?>
                       <thead>
                         <tr style="text-align: center;">
