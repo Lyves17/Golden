@@ -1,16 +1,17 @@
 <?php
-\1
 // --- Optional: enable step-by-step debug ---
 // if (file_exists(__DIR__ . '/debug_bootstrap.php')) {
 //     require __DIR__ . '/debug_bootstrap.php';
 //     DebugBootstrap::init();
 // }
-exit; // ← TEMPORAIRE, uniquement pour debug
+// exit; // ← TEMPORAIRE, uniquement pour debug (à décommenter seulement pour debug)
 
-include 'conn.php'; // Connexion à la base
-include 'number_fomt.php';
-include 'strength.php';
+// Utiliser include_once pour éviter les doubles inclusions
+include_once 'conn.php';        // Connexion à la base
+include_once 'number_fomt.php';
+include_once 'strength.php';
 
+// Vérification de session
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     $_SESSION["status"] = "Please login your account here";
     $_SESSION["code"]   = "warning";
@@ -18,6 +19,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     exit;
 }
 ?>
+
 
 <!DOCTYPE html>
 <html>
