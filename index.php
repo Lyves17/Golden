@@ -1,49 +1,75 @@
 <?php
-session_start();
-include 'conn.php';
+// Démarrer la session si ce n'est pas déjà fait
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Inclure le fichier de connexion
+require_once 'conn.php';
+
+// Initialiser les variables de session pour les messages
+if (!isset($_SESSION['status'])) {
+    $_SESSION['status'] = '';
+    $_SESSION['code'] = '';
+}
 
 if(isset($_POST['log'])) {
-    $email = $_POST["email"];
-    $pass  = $_POST["pass"];
+    // Nettoyer les entrées
+    $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+    $pass = $_POST["pass"] ?? '';
 
-    if(empty($email)) {
-        header("Location: index.php?error=");
+    // Validation des données
+    if(empty($email) || empty($pass)) {
+        $_SESSION["status"] = "Veuillez remplir tous les champs";
+        $_SESSION["code"] = "error";
+        header("Location: index.php");
         exit();
     }
 
-    // Préparer la requête pour éviter les injections SQL
-    $stmt = $con->prepare("SELECT u.*, e.* FROM users u JOIN emp_details e ON e.id = u.id WHERE u.username = ?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    try {
+        // Préparer et exécuter la requête avec PDO
+        $stmt = $pdo->prepare("SELECT u.*, e.* FROM users u JOIN emp_details e ON e.id = u.id WHERE u.username = :username LIMIT 1");
+        $stmt->bindParam(':username', $email, PDO::PARAM_STR);
+        $stmt->execute();
+        
+        if($stmt->rowCount() > 0) {
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
+            // Vérification du mot de passe (à terme, utiliser password_verify avec des mots de passe hashés)
+            if($row["username"] === $email && $row["password"] === $pass) {
+                if($row["status"] === "Active") {
+                    // Initialiser la session
+                    $_SESSION["loggedin"] = true;
+                    $_SESSION["id"]       = $row['id'];
+                    $_SESSION["type"]     = $row['role'];
+                    $_SESSION["pass"]     = $row['password'];
+                    $_SESSION["name"]     = $row['name'];
+                    $_SESSION['img']      = $row['image'];
+                    $_SESSION["email"]    = $email;
+                    $_SESSION["status"]   = "Bienvenue ".htmlspecialchars($row['name']);
+                    $_SESSION["code"]     = "success";
 
-        if($row["username"] === $email && $row["password"] === $pass) {
-            if($row["status"] === "Active") {
-                $_SESSION["loggedin"] = true;
-                $_SESSION["id"]       = $row['id'];
-                $_SESSION["type"]     = $row['role'];
-                $_SESSION["pass"]     = $row['password'];
-                $_SESSION["name"]     = $row['name'];
-                $_SESSION['img']      = $row['image'];
-                $_SESSION["email"]    = $email;
-                $_SESSION["status"]   = "Welcome ".$row['name'];
-                $_SESSION["code"]     = "success";
+                    // Définir le fuseau horaire
+                    date_default_timezone_set('Europe/Paris');
+                    $tms1 = date("Y-m-d H:i:s");
+                    $_SESSION["time"] = $tms1;
 
-                date_default_timezone_set('Asia/Karachi');
-                $tms1 = date("Y-m-d H:i:s");
-                $_SESSION["time"] = $tms1;
+                    // Historique de connexion avec requête préparée
+                    try {
+                        $stmt2 = $pdo->prepare("INSERT INTO emp_history (id, timestamp, action) VALUES (:id, :timestamp, :action)");
+                        $action = 'logged still';
+                        $stmt2->execute([
+                            ':id' => $row['id'],
+                            ':timestamp' => $tms1,
+                            ':action' => $action
+                        ]);
+                    } catch (PDOException $e) {
+                        // Logger l'erreur mais ne pas empêcher la connexion
+                        error_log("Erreur lors de l'enregistrement de l'historique: " . $e->getMessage());
+                    }
 
-                // Historique de connexion
-                $stmt2 = $con->prepare("INSERT INTO emp_history (id, timestamp, action) VALUES (?, ?, ?)");
-                $action = 'logged still';
-                $stmt2->bind_param("iss", $row['id'], $tms1, $action);
-                $stmt2->execute();
-
-                header("Location: dashboard.php");
-                exit();
+                    header("Location: dashboard.php");
+                    exit();
             } else {
                 $_SESSION["status"] = "This user account is blocked";
                 $_SESSION["code"]   = "error";
@@ -51,13 +77,18 @@ if(isset($_POST['log'])) {
                 exit();
             }
         } else {
-            $_SESSION["status"] = "Invalid username or password";
+            // Identifiants invalides
+            $_SESSION["status"] = "Nom d'utilisateur ou mot de passe incorrect";
             $_SESSION["code"]   = "error";
+            // Délai pour éviter les attaques par force brute
+            sleep(1);
             header("Location: index.php");
             exit();
         }
-    } else {
-        $_SESSION["status"] = "Invalid username or password";
+    } catch (PDOException $e) {
+        // Enregistrer l'erreur et afficher un message générique
+        error_log("Erreur de connexion: " . $e->getMessage());
+        $_SESSION["status"] = "Une erreur est survenue lors de la connexion. Veuillez réessayer plus tard.";
         $_SESSION["code"]   = "error";
         header("Location: index.php");
         exit();

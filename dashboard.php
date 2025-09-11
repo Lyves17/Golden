@@ -1,22 +1,27 @@
 <?php
+// Démarrer la session si ce n'est pas déjà fait
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // --- Optional: enable step-by-step debug ---
 // if (file_exists(__DIR__ . '/debug_bootstrap.php')) {
-//     require __DIR__ . '/debug_bootstrap.php';
+//     require_once __DIR__ . '/debug_bootstrap.php';
 //     DebugBootstrap::init();
 // }
 // exit; // ← TEMPORAIRE, uniquement pour debug (à décommenter seulement pour debug)
 
-// Utiliser include_once pour éviter les doubles inclusions
-include_once 'conn.php';        // Connexion à la base
-include_once 'number_fomt.php';
-include_once 'strength.php';
+// Utiliser require_once pour éviter les doubles inclusions et s'assurer que le fichier est présent
+require_once 'conn.php';        // Connexion à la base
+require_once 'number_fomt.php';
+require_once 'strength.php';
 
 // Vérification de session
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
-    $_SESSION["status"] = "Please login your account here";
+    $_SESSION["status"] = "Veuillez vous connecter";
     $_SESSION["code"]   = "warning";
-    header("location: index.php");
-    exit;
+    header("Location: index.php");
+    exit();
 }
 ?>
 
