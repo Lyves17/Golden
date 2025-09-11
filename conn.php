@@ -5,9 +5,9 @@ ini_set('display_errors', 1);
 
 // Configuration de la connexion à AlwaysData
 $servername = "mysql17.paris1.alwaysdata.com"; // Serveur MySQL donné par Alwaysdata
-$username   = "goldenaxe";                     // Vérifie le login exact dans ton panneau
+$username   = "nosdevis2024@gmail.com";        // Utilisateur MySQL affiché dans ton panneau Alwaysdata
 $password   = "H95yks@uCXeqSiJ";               // Mot de passe défini pour MySQL
-$dbname     = "goldenaxe_web_db";     // Nom complet de ta base Alwaysdata
+$dbname     = "goldenaxe_db";              // Nom complet de ta base Alwaysdata
 
 // Établir la connexion
 $con = mysqli_connect($servername, $username, $password, $dbname);
