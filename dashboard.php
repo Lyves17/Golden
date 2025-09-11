@@ -590,12 +590,18 @@ html {
                     <table class="table table-striped" id="myTable">
                        <?php
                        if($_SESSION['type']=="Default"){
-                        $sql="SELECT c.* , p.* FROM users c,emp_details p WHERE c.id=p.id ORDER BY p.hier_date DESC";
+                        $sql = "SELECT c.*, p.* FROM users c, emp_details p WHERE c.id = p.id ORDER BY p.hier_date DESC";
                         }else{
-                            $sql="SELECT c.* , p.* FROM users c,emp_details p WHERE c.id=p.id and c.role='Employee' ORDER BY p.hier_date DESC";
+                            $sql = "SELECT c.*, p.* FROM users c, emp_details p WHERE c.id = p.id AND c.role = 'Employee' ORDER BY p.hier_date DESC";
                         }
-                        $result = mysqli_query($con,$sql);
-                        $num = mysqli_num_rows($result);
+                        
+                        try {
+                            $stmt = $con->query($sql);
+                            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                        } catch (PDOException $e) {
+                            error_log('Erreur SQL dans dashboard.php: ' . $e->getMessage());
+                            $rows = [];
+                        }
                       ?>
                       <thead>
                         <tr style="text-align: center;">
@@ -610,9 +616,9 @@ html {
                       </thead>
                       <tbody>
                         <?php
-                        if(mysqli_num_rows($num)>0){
-                        while($row=mysqli_fetch_array ($result)){
-                            if($_SESSION['id']!=$row['id']){
+                        if (!empty($rows)) {
+                            foreach ($rows as $row) {
+                                if($_SESSION['id']!=$row['id']){
                         ?>
                         <tr>
                            <td style="text-align: center;"><?php echo $row['id'];?></td>
@@ -654,9 +660,15 @@ html {
                         <div  class="table-responsive"style="overflow:auto; max-height: 475px;">
                     <table class="table table-striped" id="myTable">
                        <?php
-                        $sql="SELECT c.* , p.* FROM accounts_info c,accountsholder p WHERE c.account=p.account ORDER BY c.registerdate DESC";
-                        $result = mysqli_query($con,$sql);
-                        $num = mysqli_num_rows($result);
+                        $sql = "SELECT c.*, p.* FROM accounts_info c, accountsholder p WHERE c.account = p.account ORDER BY c.registerdate DESC";
+                        
+                        try {
+                            $stmt = $con->query($sql);
+                            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                        } catch (PDOException $e) {
+                            error_log('Erreur SQL dans dashboard.php (tableau des comptes): ' . $e->getMessage());
+                            $rows = [];
+                        }
                       ?>
                       <thead>
                         <tr style="text-align: center;">
@@ -671,8 +683,8 @@ html {
                       </thead>
                       <tbody>
                         <?php
-                        if(mysqli_num_rows($num)>0){
-                        while($row=mysqli_fetch_array ($result)){
+                        if (!empty($rows)) {
+                            foreach ($rows as $row) {
                         ?>
                         <tr>
                            <td style="text-align: center;"><?php echo $row['account'];?></td>
@@ -713,7 +725,7 @@ html {
                                     </a>
                                     <ul class="dropdown-menu pull-right">
                                         <li><a href="employee/history_details.php?ty=Transection">Transection history</a></li>
-                                        <li><a href="employee/history_details.php?ty=Recieved">Recieved history</a></li>
+                                        <li><a href="#">Recieved history</a></li>
                                         <li><a href="employee/history_details.php?ty=Withdraw">Withdrawal history</a></li>
                                         <li><a href="employee/history_details.php?ty=Deposit">Deposit history</a></li>
                                     </ul>
@@ -723,26 +735,32 @@ html {
                         <div  class="table-responsive"style="overflow:auto; max-height: 475px;">
                     <table class="display table table-bordered" id="myTable" cellspacing="0">
                        <?php
-                        $sql="SELECT c.* , p.* FROM accountsholder c,account_history p WHERE c.account=p.account ORDER BY no DESC";
-                        $result = mysqli_query($con,$sql);
-                        $num = mysqli_num_rows($result);
+                        $sql = "SELECT c.*, p.* FROM accountsholder c, account_history p WHERE c.account = p.account ORDER BY no DESC";
+                        
+                        try {
+                            $stmt = $con->query($sql);
+                            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                        } catch (PDOException $e) {
+                            error_log('Erreur SQL dans dashboard.php (historique des comptes): ' . $e->getMessage());
+                            $rows = [];
+                        }
                       ?>
                       <thead>
                         <tr style="text-align: center;">
-                          <th style="text-align: center;" > No </th>
-                          <th style="text-align: center;">Account Holder Name </th>
-                          <th style="text-align: center;">Account Number </th>
-                          <th style="text-align: center;"> History Type </th>
-                          <th style="text-align: center;"> Amount </th>
-                          <th style="text-align: center;"> Date</th>
-                          <th style="text-align: center;">Time </th>
+                          <th>No</th>
+                          <th>Account Holder Name </th>
+                          <th>Account Number </th>
+                          <th> History Type </th>
+                          <th> Amount </th>
+                          <th>Date</th>
+                          <th>Time </th>
                         </tr>
                       </thead>
                       <tbody>
                         <?php
-                        if(mysqli_num_rows($num)>0){
+                        if (!empty($rows)) {
                             $numb=1;
-                        while($row=mysqli_fetch_array ($result)){
+                            foreach ($rows as $row) {
                         ?>
                         <tr>
                            <td style="text-align: center;"><?php echo $numb;?></td>

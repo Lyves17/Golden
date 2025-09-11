@@ -13,8 +13,9 @@ if (!isset($_SESSION['status'])) {
     $_SESSION['code'] = '';
 }
 
+// Vérifier si le formulaire a été soumis
 if(isset($_POST['log'])) {
-    // Nettoyer les entrées
+    // Nettoyer et valider les entrées
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
     $pass = $_POST["pass"] ?? '';
 
@@ -27,16 +28,21 @@ if(isset($_POST['log'])) {
     }
 
     try {
+        // Vérifier si la connexion est établie
+        if (!isset($con)) {
+            throw new PDOException('Erreur de connexion à la base de données');
+        }
+
         // Préparer et exécuter la requête avec PDO
-        $stmt = $pdo->prepare("SELECT u.*, e.* FROM users u JOIN emp_details e ON e.id = u.id WHERE u.username = :username LIMIT 1");
+        $stmt = $con->prepare("SELECT u.*, e.* FROM users u JOIN emp_details e ON e.id = u.id WHERE u.username = :username LIMIT 1");
         $stmt->bindParam(':username', $email, PDO::PARAM_STR);
         $stmt->execute();
         
         if($stmt->rowCount() > 0) {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // Vérification du mot de passe (à terme, utiliser password_verify avec des mots de passe hashés)
-            if($row["username"] === $email && $row["password"] === $pass) {
+            // Vérification du mot de passe (version non hachée pour compatibilité)
+            if($row["password"] === $pass) {
                 if($row["status"] === "Active") {
                     // Initialiser la session
                     $_SESSION["loggedin"] = true;
