@@ -595,12 +595,14 @@ html {
                             $sql = "SELECT c.*, p.* FROM users c, emp_details p WHERE c.id = p.id AND c.role = 'Employee' ORDER BY p.hier_date DESC";
                         }
                         
-                        try {
-                            $stmt = $con->query($sql);
-                            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                        } catch (PDOException $e) {
-                            error_log('Erreur SQL dans dashboard.php: ' . $e->getMessage());
+                        $result = db_query($sql);
+                        if (!$result) {
                             $rows = [];
+                        } else {
+                            $rows = [];
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                $rows[] = $row;
+                            }
                         }
                       ?>
                       <thead>
@@ -662,12 +664,14 @@ html {
                        <?php
                         $sql = "SELECT c.*, p.* FROM accounts_info c, accountsholder p WHERE c.account = p.account ORDER BY c.registerdate DESC";
                         
-                        try {
-                            $stmt = $con->query($sql);
-                            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                        } catch (PDOException $e) {
-                            error_log('Erreur SQL dans dashboard.php (tableau des comptes): ' . $e->getMessage());
+                        $result = db_query($sql);
+                        if (!$result) {
                             $rows = [];
+                        } else {
+                            $rows = [];
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                $rows[] = $row;
+                            }
                         }
                       ?>
                       <thead>
@@ -737,12 +741,14 @@ html {
                        <?php
                         $sql = "SELECT c.*, p.* FROM accountsholder c, account_history p WHERE c.account = p.account ORDER BY no DESC";
                         
-                        try {
-                            $stmt = $con->query($sql);
-                            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                        } catch (PDOException $e) {
-                            error_log('Erreur SQL dans dashboard.php (historique des comptes): ' . $e->getMessage());
+                        $result = db_query($sql);
+                        if (!$result) {
                             $rows = [];
+                        } else {
+                            $rows = [];
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                $rows[] = $row;
+                            }
                         }
                       ?>
                       <thead>

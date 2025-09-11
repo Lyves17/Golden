@@ -27,22 +27,23 @@ if(isset($_POST['log'])) {
         exit();
     }
 
-    try {
-        // Vérifier si la connexion est établie
-        if (!isset($con)) {
-            throw new PDOException('Erreur de connexion à la base de données');
-        }
+    // Vérifier si la connexion est établie
+    if (!isset($con)) {
+        die("Erreur de connexion à la base de données");
+    }
 
-        // Préparer et exécuter la requête avec PDO
-        $stmt = $con->prepare("SELECT u.*, e.* FROM users u JOIN emp_details e ON e.id = u.id WHERE u.username = :username LIMIT 1");
-        $stmt->bindParam(':username', $email, PDO::PARAM_STR);
-        $stmt->execute();
-        
-        if($stmt->rowCount() > 0) {
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    // Échapper les données d'entrée pour la sécurité
+    $email = mysqli_real_escape_string($con, $email);
+    
+    // Préparer et exécuter la requête
+    $sql = "SELECT u.*, e.* FROM users u JOIN emp_details e ON e.id = u.id WHERE u.username = '$email' LIMIT 1";
+    $result = db_query($sql);
+    
+    if ($result && mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_assoc($result);
 
-            // Vérification du mot de passe (version non hachée pour compatibilité)
-            if($row["password"] === $pass) {
+        // Vérification du mot de passe (version non hachée pour compatibilité)
+        if($row["password"] === $pass) {
                 if($row["status"] === "Active") {
                     // Initialiser la session
                     $_SESSION["loggedin"] = true;
