@@ -3,7 +3,7 @@
 require_once __DIR__ . '/conn.php';
 
 /**
- * Formatte un nombre à partir d'un résultat de requête SQL
+ * Formatte-- un nombre à partir d'un résultat de requête SQL
  * @param string $sql La requête SQL à exécuter
  * @return string Nombre formaté ou "0" si erreur ou pas de résultat
  */
