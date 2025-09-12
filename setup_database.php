@@ -4,11 +4,11 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 try {
-    // Connect to MySQL server (without selecting a database)
+    // Connexion à ta base déjà créée sur Alwaysdata
     $pdo = new PDO(
-        'mysql:host=localhost;charset=utf8mb4',
-        'root',
-        '',
+        'mysql:host=mysql-goldenaxe.alwaysdata.net;dbname=goldenaxe_db;charset=utf8mb4',
+        'goldenaxe',
+        'H95yks@uCXeqSiJ', // ton mot de passe MySQL Alwaysdata
         [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -16,21 +16,17 @@ try {
         ]
     );
 
-    // Create database if not exists
-    $pdo->exec("CREATE DATABASE IF NOT EXISTS `bank_management` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-    $pdo->exec("USE `bank_management`");
-
-    // Read and execute SQL file
+    // Charger et exécuter database.sql (création des tables)
     $sql = file_get_contents(__DIR__ . '/database.sql');
     if ($sql === false) {
-        throw new Exception("Could not read database.sql file");
+        throw new Exception("Impossible de lire le fichier database.sql");
     }
-    
+
     $pdo->exec($sql);
-    
-    echo "Database and tables created successfully!\n";
-    echo "You can now access the application.\n";
-    
+
+    echo "✅ Tables créées/initialisées avec succès dans goldenaxe_db !<br>";
+    echo "➡️ Tu peux maintenant utiliser l’application.<br>";
+
 } catch (PDOException $e) {
     die("Database error: " . $e->getMessage());
 } catch (Exception $e) {
