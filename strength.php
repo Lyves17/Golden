@@ -33,7 +33,7 @@ function r_format($sql) {
     
     // Formatage du nombre avec 2 décimales et séparateurs de milliers
     $formatted = number_format($number, 2, '.', ',');
-    
+
     // Formatage conditionnel selon la taille du nombre
     if ($number >= 1000000000000) {
         return round($number/1000000000000, 2).'T';
@@ -45,3 +45,6 @@ function r_format($sql) {
         return round($number/1000, 2).'K';
     }
     
+    return $formatted;
+}
+?>

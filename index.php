@@ -34,49 +34,40 @@ if(isset($_POST['log'])) {
 
     // Échapper les données d'entrée pour la sécurité
     $email = mysqli_real_escape_string($con, $email);
-    
+
     // Préparer et exécuter la requête
     $sql = "SELECT u.*, e.* FROM users u JOIN emp_details e ON e.id = u.id WHERE u.username = '$email' LIMIT 1";
     $result = db_query($sql);
-    
+
     if ($result && mysqli_num_rows($result) > 0) {
         $row = mysqli_fetch_assoc($result);
 
-        // Vérification du mot de passe (version non hachée pour compatibilité)
+        // Vérification du mot de passe (non haché pour compatibilité)
         if($row["password"] === $pass) {
-                if($row["status"] === "Active") {
-                    // Initialiser la session
-                    $_SESSION["loggedin"] = true;
-                    $_SESSION["id"]       = $row['id'];
-                    $_SESSION["type"]     = $row['role'];
-                    $_SESSION["pass"]     = $row['password'];
-                    $_SESSION["name"]     = $row['name'];
-                    $_SESSION['img']      = $row['image'];
-                    $_SESSION["email"]    = $email;
-                    $_SESSION["status"]   = "Bienvenue ".htmlspecialchars($row['name']);
-                    $_SESSION["code"]     = "success";
+            if($row["status"] === "Active") {
+                // Initialiser la session
+                $_SESSION["loggedin"] = true;
+                $_SESSION["id"]       = $row['id'];
+                $_SESSION["type"]     = $row['role'];
+                $_SESSION["pass"]     = $row['password'];
+                $_SESSION["name"]     = $row['name'];
+                $_SESSION['img']      = $row['image'];
+                $_SESSION["email"]    = $email;
+                $_SESSION["status"]   = "Bienvenue ".htmlspecialchars($row['name']);
+                $_SESSION["code"]     = "success";
 
-                    // Définir le fuseau horaire
-                    date_default_timezone_set('Europe/Paris');
-                    $tms1 = date("Y-m-d H:i:s");
-                    $_SESSION["time"] = $tms1;
+                // Définir le fuseau horaire
+                date_default_timezone_set('Europe/Paris');
+                $tms1 = date("Y-m-d H:i:s");
+                $_SESSION["time"] = $tms1;
 
-                    // Historique de connexion avec requête préparée
-                    try {
-                        $stmt2 = $pdo->prepare("INSERT INTO emp_history (id, timestamp, action) VALUES (:id, :timestamp, :action)");
-                        $action = 'logged still';
-                        $stmt2->execute([
-                            ':id' => $row['id'],
-                            ':timestamp' => $tms1,
-                            ':action' => $action
-                        ]);
-                    } catch (PDOException $e) {
-                        // Logger l'erreur mais ne pas empêcher la connexion
-                        error_log("Erreur lors de l'enregistrement de l'historique: " . $e->getMessage());
-                    }
+                // Historique de connexion avec mysqli
+                $action = 'logged still';
+                $sql_history = "INSERT INTO emp_history (id, timestamp, action) VALUES ('".$row['id']."', '".$tms1."', '".$action."')";
+                db_query($sql_history);
 
-                    header("Location: dashboard.php");
-                    exit();
+                header("Location: dashboard.php");
+                exit();
             } else {
                 $_SESSION["status"] = "This user account is blocked";
                 $_SESSION["code"]   = "error";
@@ -87,16 +78,14 @@ if(isset($_POST['log'])) {
             // Identifiants invalides
             $_SESSION["status"] = "Nom d'utilisateur ou mot de passe incorrect";
             $_SESSION["code"]   = "error";
-            // Délai pour éviter les attaques par force brute
-            sleep(1);
+            sleep(1); // Délai pour éviter les attaques par force brute
             header("Location: index.php");
             exit();
         }
-    } catch (PDOException $e) {
-        // Enregistrer l'erreur et afficher un message générique
-        error_log("Erreur de connexion: " . $e->getMessage());
-        $_SESSION["status"] = "Une erreur est survenue lors de la connexion. Veuillez réessayer plus tard.";
+    } else {
+        $_SESSION["status"] = "Nom d'utilisateur ou mot de passe incorrect";
         $_SESSION["code"]   = "error";
+        sleep(1);
         header("Location: index.php");
         exit();
     }
