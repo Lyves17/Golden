@@ -1,4 +1,7 @@
 <?php
+// Inclure la connexion centralisée
+require_once __DIR__ . '/conn.php';
+
 /**
  * Formatte un nombre à partir d'un résultat de requête SQL
  * @param string $sql La requête SQL à exécuter
@@ -7,13 +10,15 @@
 function r_format($sql) {
     global $con;
     
-    if (!isset($con)) {
+    if (!isset($con) || !$con) {
         error_log('Erreur: Connexion à la base de données non initialisée dans r_format()');
         return "0";
     }
     
-    $result = db_query($sql);
+    // Exécuter la requête
+    $result = mysqli_query($con, $sql);
     if (!$result) {
+        error_log('Erreur SQL: ' . mysqli_error($con));
         return "0";
     }
     
@@ -40,6 +45,3 @@ function r_format($sql) {
         return round($number/1000, 2).'K';
     }
     
-    return $formatted;
-}
-?>
