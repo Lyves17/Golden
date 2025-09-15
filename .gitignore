@@ -1,0 +1,76 @@
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Fichiers d'environnement
+.env
+.env.*
+!.env.example
+
+# Dossiers de dépendances
+/vendor/
+/node_modules/
+
+# Fichiers de cache
+*.log
+/cache/
+/sessions/
+
+# Fichiers de configuration locaux
+/config/local.php
+
+# Fichiers de débogage
+debug.log
+*.log
+
+# Fichiers temporaires
+*.tmp
+*.temp
+
+# Fichiers de sauvegarde
+*.bak
+*.swp
+*~
+
+# Fichiers d'IDE
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Fichiers de déploiement
+build/
+dist/
+
+# Fichiers de base de données
+*.sqlite
+*.sql
+!database/schema.sql
+
+# Fichiers de stockage
+/storage/*
+!/storage/.gitkeep
+
+# Fichiers de test
+/coverage/
+/phpunit.xml.dist
+!phpunit.xml
+
+# Fichiers de logs
+/logs/
+*.log
+
+# Fichiers de configuration PHP
+php.ini
+!docker/php.ini
+
+# Fichiers de configuration Apache/Nginx
+*.conf
+!docker/nginx.conf
+
+# Fichiers de configuration Docker
+docker-compose.override.yml
+docker-compose.override.yml.example
+!docker/apache.conf
+!docker/nginx.conf
+!docker/php.ini

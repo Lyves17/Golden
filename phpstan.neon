@@ -1,0 +1,129 @@
+includes:
+    - vendor/nunomaduro/larastan/extension.neon
+
+parameters:
+    level: 8
+    paths:
+        - app
+        - config
+        - database
+        - routes
+        - tests/Unit
+        - tests/Feature
+        - tests/Integration
+
+    excludePaths:
+        - %currentWorkingDirectory%/vendor/*
+        - %currentWorkingDirectory%/node_modules/*
+        - %currentWorkingDirectory%/storage/*
+        - %currentWorkingDirectory%/bootstrap/cache/*
+        - %currentWorkingDirectory%/public/*
+        - %currentWorkingDirectory%/tests/Browser/*
+
+    checkMissingIterableValueType: true
+    checkGenericClassInNonGenericObjectType: true
+    checkMissingCallableSignature: true
+    checkMissingTypehint: true
+    checkUninitializedProperties: true
+    reportUnmatchedIgnoredErrors: false
+    treatPhpDocTypesAsCertain: true
+    inferPrivatePropertyTypeFromConstructor: true
+    
+    universalObjectCratesClasses:
+        - Illuminate\Support\Collection
+        - Illuminate\Database\Eloquent\Collection
+        - Illuminate\Support\Enumerable
+        - Illuminate\Database\Eloquent\Builder
+        - Illuminate\Database\Query\Builder
+        - Illuminate\Http\Request
+        - Illuminate\Http\JsonResponse
+        - stdClass
+        - ArrayObject
+        - ArrayIterator
+        - ArrayAccess
+        - Traversable
+        - Iterator
+        - IteratorAggregate
+        - Countable
+        - Serializable
+        - JsonSerializable
+
+    ignoreErrors:
+        - message: '#^Call to an undefined method .*\\(.*)\\:.*\(\).$#'
+          paths:
+              - tests/*
+        - message: '#^Access to an undefined property .*\\(.*)\:\:(.*)\.$#'
+          paths:
+              - tests/*
+        - message: '#^Parameter \#\d \$.* of method .*\\(.*\).* expects .*, .* given\.$#'
+          paths:
+              - tests/*
+        - message: '#^Method .*\\(.*\).* has no return typehint specified\.$#'
+          paths:
+              - tests/*
+        - message: '#^PHPDoc tag @.* has invalid value .*\.$#'
+          paths:
+              - tests/*
+              
+        # Ignore common Laravel specific patterns
+        - '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder::.*\(\)\.$#'
+        - '#^Call to an undefined method Illuminate\\Database\\Query\\Builder::.*\(\)\.$#'
+        - '#^Call to an undefined method Illuminate\\Support\\Collection::.*\(\)\.$#'
+        - '#^Call to an undefined method Illuminate\\Support\\Facades\\[A-Za-z]+::.*\(\)\.$#'
+        - '#^Call to an undefined method Illuminate\\Http\\Request::.*\(\)\.$#'
+        - '#^Call to an undefined method Illuminate\\Http\\Response::.*\(\)\.$#'
+        - '#^Call to an undefined method Illuminate\\Http\\JsonResponse::.*\(\)\.$#'
+
+    # Larastan specific configurations
+    excludes_analyse:
+        - storage/*
+        - vendor/*
+        - node_modules/*
+        - public/*
+        - bootstrap/cache/*
+        - database/migrations/*
+        - database/seeders/*
+        - tests/*
+
+    # Custom rules
+    rules:
+        - NunoMaduro\Larastan\Rules\NoUnusedCollectionRule
+        - NunoMaduro\Larastan\Rules\NoUnnecessaryCollectionCallRule
+        - NunoMaduro\Larastan\Rules\NoModelMakeRule
+        - NunoMaduro\Larastan\Rules\NoDynamicWhereRule
+        - NunoMaduro\Larastan\Rules\NoFacadeMocksRule
+        - NunoMaduro\Larastan\Rules\NoGlobalLaravelCodeRule
+
+    # Custom early terminating method calls
+    earlyTerminatingMethodCalls:
+        - ['Nette\Application\UI\Presenter', 'run']
+        - ['Nette\Application\UI\Component', 'run']
+        - ['Nette\Application\UI\Control', 'run']
+        - ['Nette\Application\UI\Component', 'render']
+        - ['Nette\Application\UI\Control', 'render']
+        - ['Nette\Application\UI\Control', 'renderToResponse']
+        - ['Nette\Application\UI\Control', 'sendTemplate']
+        - ['Nette\Application\UI\Control', 'sendPayload']
+        - ['Nette\Application\UI\Control', 'sendJson']
+        - ['Nette\Application\UI\Control', 'sendResponse']
+        - ['Nette\Application\UI\Control', 'redirect']
+        - ['Nette\Application\UI\Control', 'redirectUrl']
+        - ['Nette\Application\UI\Control', 'redirectPermanent']
+        - ['Nette\Application\UI\Control', 'redirectPermanentUrl']
+        - ['Nette\Application\UI\Control', 'terminate']
+        - ['Nette\Application\UI\Control', 'forward']
+        - ['Nette\Application\UI\Control', 'sendFile']
+        - ['Nette\Application\UI\Control', 'sendJsonObject']
+
+    # Custom early terminating function calls
+    earlyTerminatingFunctionCalls:
+        - ['abort', 'exit']
+        - ['abort_if', 'exit']
+        - ['abort_unless', 'exit']
+        - ['dd', 'exit']
+        - ['dump', 'exit']
+        - ['exit', 'exit']
+        - ['die', 'exit']
+        - ['response', 'exit']
+        - ['redirect', 'exit']
+        - ['view', 'exit']

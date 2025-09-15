@@ -1,4 +1,10 @@
 <?php
+
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__.'/php_errors.log');
+
+
+
 // Démarrer la session si ce n'est pas déjà fait
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -36,8 +42,12 @@ if(isset($_POST['log'])) {
     $email = mysqli_real_escape_string($con, $email);
 
     // Préparer et exécuter la requête
-    $sql = "SELECT u.*, e.* FROM users u JOIN emp_details e ON e.id = u.id WHERE u.username = '$email' LIMIT 1";
-    $result = db_query($sql);
+    $sql = "SELECT u.*, e.* 
+            FROM users u 
+            JOIN emp_details e ON e.id = u.id 
+            WHERE u.username = '$email' 
+            LIMIT 1";
+    $result = mysqli_query($con, $sql);
 
     if ($result && mysqli_num_rows($result) > 0) {
         $row = mysqli_fetch_assoc($result);
@@ -61,10 +71,11 @@ if(isset($_POST['log'])) {
                 $tms1 = date("Y-m-d H:i:s");
                 $_SESSION["time"] = $tms1;
 
-                // Historique de connexion avec mysqli
+                // Historique de connexion avec mysqli (INSERT sans logout_date_time)
                 $action = 'logged still';
-                $sql_history = "INSERT INTO emp_history (id, timestamp, action) VALUES ('".$row['id']."', '".$tms1."', '".$action."')";
-                db_query($sql_history);
+                $sql_history = "INSERT INTO emp_history (id, log_date_time, action) 
+                                VALUES ('".$row['id']."', '".$tms1."', '".$action."')";
+                mysqli_query($con, $sql_history);
 
                 header("Location: dashboard.php");
                 exit();

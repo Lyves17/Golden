@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         verbose="true"
+         stopOnFailure="false"
+         stopOnError="false"
+         stopOnIncomplete="false"
+         stopOnSkipped="false"
+         stopOnRisky="false"
+         failOnWarning="true"
+         failOnRisky="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         beStrictAboutOutputDuringTests="true"
+         beStrictAboutTodoAnnotatedTests="true"
+         cacheResult="true"
+         cacheResultFile=".phpunit.cache/test-results"
+         executionOrder="random"
+         backupGlobals="true"
+         backupStaticAttributes="false"
+         beStrictAboutChangesToGlobalState="true"
+>
+    <testsuites>
+        <!-- Unit Tests -->
+        <testsuite name="Unit">
+            <directory suffix="Test.php">./tests/Unit</directory>
+        </testsuite>
+        
+        <!-- Feature Tests -->
+        <testsuite name="Feature">
+            <directory suffix="Test.php">./tests/Feature</directory>
+        </testsuite>
+        
+        <!-- Integration Tests -->
+        <testsuite name="Integration">
+            <directory suffix="Test.php">./tests/Integration</directory>
+        </testsuite>
+        
+        <!-- All Tests -->
+        <testsuite name="All">
+            <directory suffix="Test.php">./tests</directory>
+        </testsuite>
+    </testsuites>
+
+    <!-- Code Coverage Configuration -->
+    <coverage 
+        processUncoveredFiles="true"
+        includeUncoveredFiles="true"
+        cacheDirectory=".phpunit.cache/code-coverage"
+        pathCoverage="false"
+        ignoreDeprecatedCodeUnits="true"
+        disableCodeCoverageIgnore="false"
+        disableIgnoredLines="false"
+        requireCoverageMetadata="true"
+        forceCoversAnnotation="false"
+        addUncoveredFilesFromWhitelist="true"
+    >
+        <include>
+            <directory suffix=".php">./app</directory>
+            <directory suffix=".php">./config</directory>
+            <directory suffix=".php">./database</directory>
+            <directory suffix=".php">./routes</directory>
+        </include>
+        
+        <exclude>
+            <directory>./vendor</directory>
+            <directory>./tests</directory>
+            <directory>./storage</directory>
+            <directory>./bootstrap/cache</directory>
+            <directory>./public</directory>
+            <directory>./resources/views</directory>
+            <directory>./resources/lang</directory>
+            <file>./app/Console/Kernel.php</file>
+            <file>./app/Exceptions/Handler.php</file>
+            <file>./app/Http/Kernel.php</file>
+            <file>./app/Providers/*.php</file>
+        </exclude>
+        
+        <report>
+            <html outputDirectory="./build/coverage" lowUpperBound="50" highLowerBound="90"/>
+            <text outputFile="php://stdout" showUncoveredFiles="false" showOnlySummary="true"/>
+            <clover outputFile="./build/logs/clover.xml"/>
+            <crap4j outputFile="./build/logs/crap4j.xml"/>
+            <php outputFile="./build/logs/coverage.php"/>
+            <text outputFile="./build/logs/coverage.txt" showUncoveredFiles="true" showOnlySummary="false"/>
+        </report>
+    </coverage>
+
+    <!-- PHP Configuration -->
+    <php>
+        <!-- Application Environment -->
+        <server name="APP_ENV" value="testing"/>
+        <server name="APP_DEBUG" value="true"/>
+        <server name="APP_KEY" value="base64:testkey1234567890abcdefghijklmnopqrstuvwxyz"/>
+        <server name="APP_URL" value="http://localhost"/>
+        
+        <!-- Database Configuration -->
+        <server name="DB_CONNECTION" value="sqlite"/>
+        <server name="DB_DATABASE" value=":memory:"/>
+        <server name="DB_FOREIGN_KEYS" value="true"/>
+        
+        <!-- Session & Cache -->
+        <server name="CACHE_DRIVER" value="array"/>
+        <server name="SESSION_DRIVER" value="array"/>
+        <server name="QUEUE_CONNECTION" value="sync"/>
+        
+        <!-- Mail Configuration -->
+        <server name="MAIL_MAILER" value="array"/>
+        <server name="MAIL_FROM_ADDRESS" value="test@example.com"/>
+        <server name="MAIL_FROM_NAME" value="Test"/>
+        
+        <!-- Security -->
+        <server name="BCRYPT_ROUNDS" value="4"/>
+        <server name="HASH_DRIVER" value="bcrypt"/>
+        
+        <!-- Features -->
+        <server name="TELESCOPE_ENABLED" value="false"/>
+        <server name="SCOUT_DRIVER" value="null"/>
+        
+        <!-- Testing Configuration -->
+        <env name="TESTING" value="true"/>
+        <env name="MIX_PUSHER_APP_KEY" value="${PUSHER_APP_KEY}"/>
+        <env name="MIX_PUSHER_APP_CLUSTER" value="${PUSHER_APP_CLUSTER}"/>
+    </php>
+    
+    <!-- Test Listener for Code Coverage Reports -->
+    <listeners>
+        <listener class="\PHPUnit\Util\Log\TeamCity" file="">
+            <arguments>
+                <string>convertDeprecationsToExceptions="true"</string>
+                <string>convertNoticesToExceptions="true"</string>
+                <string>convertWarningsToExceptions="true"</string>
+            </arguments>
+        </listener>
+    </listeners>
+    
+    <!-- Filter for Code Coverage -->
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./app</directory>
+            <directory suffix=".php">./config</directory>
+            <directory suffix=".php">./database</directory>
+            <directory suffix=".php">./routes</directory>
+            <exclude>
+                <directory>./vendor</directory>
+                <directory>./tests</directory>
+                <directory>./storage</directory>
+                <directory>./bootstrap/cache</directory>
+                <directory>./public</directory>
+                <directory>./resources/views</directory>
+                <directory>./resources/lang</directory>
+                <file>./app/Console/Kernel.php</file>
+                <file>./app/Exceptions/Handler.php</file>
+                <file>./app/Http/Kernel.php</file>
+                <file>./app/Providers/*.php</file>
+            </exclude>
+        </whitelist>
+    </filter>
+    
+    <!-- Logging Configuration -->
+    <logging>
+        <log type="coverage-html" target="./build/coverage" lowUpperBound="50" highLowerBound="90"/>
+        <log type="coverage-clover" target="./build/logs/clover.xml"/>
+        <log type="coverage-crap4j" target="./build/logs/crap4j.xml"/>
+        <log type="junit" target="./build/logs/junit.xml"/>
+        <log type="testdox-html" target="./build/logs/testdox.html"/>
+        <log type="testdox-text" target="./build/logs/testdox.txt"/>
+        <log type="testdox-xml" target="./build/logs/testdox.xml"/>
+    </logging>
+    
+    <!-- Test Suite Order -->
+    <testSuiteLoaderFile>./vendor/phpunit/phpunit/src/Runner/StandardTestSuiteLoader.php</testSuiteLoaderFile>
+    <extensions>
+        <extension class="PHPUnit\Runner\Extension\PharLoader">
+            <arguments>
+                <string>phar://phpunit/phpunit/phpunit.phar</string>
+            </arguments>
+        </extension>
+    </extensions>
+</phpunit>

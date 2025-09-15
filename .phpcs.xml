@@ -1,0 +1,189 @@
+<?xml version="1.0"?>
+<ruleset name="GoldenAxe">
+    <description>The coding standard for the GoldenAxe project.</description>
+
+    <!-- Show progress -->
+    <arg value="p"/>
+
+    <!-- Show sniff and source of errors -->
+    <arg name="report" value="full"/>
+
+    <!-- Paths to check -->
+    <file>app</file>
+    <file>config</file>
+    <file>database</file>
+    <file>routes</file>
+    <rule ref="PSR12">
+        <!-- Exclude some PSR12 rules that conflict with Laravel -->
+        <exclude name="PSR12.Classes.ClassInstantiation.MissingParentheses" />
+        <exclude name="PSR12.Files.FileHeader.SpacingAfterBlock" />
+        <exclude name="PSR12.Files.ImportStatement.SpacingAfterLastImport" />
+        <exclude name="PSR12.Operators.OperatorSpacing.NoSpaceAfter" />
+        <exclude name="PSR12.Operators.OperatorSpacing.NoSpaceBefore" />
+        <exclude name="PSR12.Operators.OperatorSpacing.SpacingAfter" />
+        <exclude name="PSR12.Operators.OperatorSpacing.SpacingBefore" />
+        <exclude name="Squiz.WhiteSpace.OperatorSpacing.SpacingAfter" />
+        <exclude name="Squiz.WhiteSpace.OperatorSpacing.SpacingBefore" />
+    </rule>
+
+    <!-- Include Slevomat Coding Standard -->
+    <rule ref="SlevomatCodingStandard">
+        <!-- Disable some Slevomat rules that don't fit our needs -->
+        <exclude name="SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing" />
+        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint" />
+        <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint" />
+        <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint" />
+    </rule>
+
+    <!-- Custom rules -->
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="120"/>
+            <property name="absoluteLineLimit" value="120"/>
+        </properties>
+    </rule>
+
+    <!-- Ignore some common patterns in Laravel -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/node_modules/*</exclude-pattern>
+    <exclude-pattern>*/bootstrap/cache/*</exclude-pattern>
+    <exclude-pattern>*/storage/*</exclude-pattern>
+    <exclude-pattern>*/public/*</exclude-pattern>
+    <exclude-pattern>*/database/migrations/*</exclude-pattern>
+    <exclude-pattern>*/database/seeders/*</exclude-pattern>
+    <exclude-pattern>*/resources/views/*</exclude-pattern>
+    <exclude-pattern>*/tests/Browser/*</exclude-pattern>
+
+    <!-- File extensions -->
+    <arg name="extensions" value="php"/>
+    <arg name="parallel" value="80"/>
+
+    <!-- Show progress -->
+    <arg value="p"/>
+
+    <!-- Show colors in console -->
+    <arg name="colors"/>
+
+    <!-- Show sniff codes in all reports -->
+    <arg value="s"/>
+
+    <!-- Show sniff warnings (severity 0-5) -->
+    <arg name="warning-severity" value="5"/>
+
+    <!-- Show sniff errors (severity 6) -->
+    <arg name="error-severity" value="6"/>
+
+    <!-- Show source of each error/warning -->
+    <arg value="v"/>
+
+    <!-- Show sniff codes in report -->
+    <arg value="s"/>
+    <rule ref="SlevomatCodingStandard.Classes.ClassConstantVisibility"/>
+    <rule ref="SlevomatCodingStandard.Classes.DisallowLateStaticBindingForConstants"/>
+    <rule ref="SlevomatCodingStandard.Classes.RequireAbstractOrFinal">
+        <properties>
+            <property name="exclude" type="array">
+                <element value="*Controller"/>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- Force consistent method and property naming -->
+    <rule ref="SlevomatCodingStandard.NamingConventions.ValidVariableName">
+        <properties>
+            <property name="exclude" type="array">
+                <element value="_*_*_*_"/>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- Force consistent use statements -->
+    <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.RequireOneNamespaceInFile"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.UseSpacing">
+        <properties>
+            <property name="linesCountAfterLastUse" value="1"/>
+            <property name="linesCountBeforeFirstUse" value="1"/>
+            <property name="linesCountBetweenUseTypes" value="1"/>
+        </properties>
+    </rule>
+
+    <!-- Force consistent docblocks -->
+    <rule ref="SlevomatCodingStandard.Commenting.DocCommentSpacing">
+        <properties>
+            <property name="linesCountBeforeFirstContent" value="0"/>
+            <property name="linesCountBetweenDescriptionAndAnnotations" value="1"/>
+            <property name="linesCountBetweenDifferentAnnotationsTypes" value="1"/>
+            <property name="linesCountBetweenAnnotationsGroups" value="1"/>
+            <property name="linesCountAfterLastContent" value="0"/>
+            <property name="annotationsGroups" type="array">
+                <element value="@param"/>
+                <element value="@return"/>
+                <element value="@throws"/>
+                <element value="@deprecated"/>
+                <element value="@see"/>
+                <element value="@uses"/>
+                <element value="@property"/>
+                <element value="@method"/>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- Force consistent type hints -->
+    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint">
+        <properties>
+            <property name="enableNativeTypeHint" value="true"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint">
+        <properties>
+            <property name="enableVoidTypeHint" value="true"/>
+            <property name="enableStaticTypeHint" value="true"/>
+        </properties>
+    </rule>
+
+    <!-- Force consistent spacing -->
+    <rule ref="SlevomatCodingStandard.WhiteSpace.OperatorSpacing">
+        <properties>
+            <property name="spacesCountAround" value="1"/>
+        </properties>
+    </rule>
+
+    <!-- Force consistent array indentation -->
+    <rule ref="SlevomatCodingStandard.Arrays.AlphabeticallySortedByKeys">
+        <properties>
+            <property name="sortAlphabetically" value="true"/>
+        </properties>
+    </rule>
+
+    <!-- Force consistent class references -->
+    <rule ref="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly">
+        <properties>
+            <property name="searchAnnotations" value="true"/>
+            <property name="allowFullyQualifiedNameForCollidingClasses" value="true"/>
+            <property name="allowFullyQualifiedNameForCollidingFunctions" value="true"/>
+            <property name="allowFullyQualifiedNameForCollidingConstants" value="true"/>
+            <property name="allowFullyQualifiedGlobalClasses" value="false"/>
+            <property name="allowFullyQualifiedGlobalFunctions" value="false"/>
+            <property name="allowFullyQualifiedGlobalConstants" value="false"/>
+            <property name="allowFallbackGlobalFunctions" value="true"/>
+            <property name="allowFallbackGlobalConstants" value="true"/>
+            <property name="allowFallbackGlobalClasses" value="true"/>
+        </properties>
+    </rule>
+
+    <!-- Force consistent exception handling -->
+    <rule ref="SlevomatCodingStandard.Exceptions.ReferenceThrowableOnly">
+        <properties>
+            <property name="allowCustomException" value="true"/>
+        </properties>
+    </rule>
+
+    <!-- Ignore some rules for test files -->
+    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+</ruleset>

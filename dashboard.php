@@ -4,24 +4,42 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// --- Optional: enable step-by-step debug ---
-// if (file_exists(__DIR__ . '/debug_bootstrap.php')) {
-//     require_once __DIR__ . '/debug_bootstrap.php';
-//     DebugBootstrap::init();
-// }
-// exit; // ← TEMPORAIRE, uniquement pour debug (à décommenter seulement pour debug)
-
-// Utiliser require_once pour éviter les doubles inclusions et s'assurer que le fichier est présent
+// Inclure les fichiers nécessaires
 require_once 'conn.php';        // Connexion à la base
 require_once 'number_fomt.php';
 require_once 'strength.php';
+require_once 'config.php';
 
 // Vérification de session
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     $_SESSION["status"] = "Veuillez vous connecter";
-    $_SESSION["code"]   = "warning";
+    $_SESSION["code"] = "warning";
     header("Location: index.php");
     exit();
+}
+
+// Récupérer le rôle de l'utilisateur
+$userRole = $_SESSION['role'] ?? ROLE_CLIENT;
+$isAdmin = $userRole === ROLE_ADMIN;
+$isEmployee = $userRole === ROLE_EMPLOYEE;
+$isClient = $userRole === ROLE_CLIENT;
+
+// Fonction pour vérifier l'accès
+function hasAccess($requiredRole) {
+    global $userRole;
+    
+    // L'admin a accès à tout
+    if ($userRole === ROLE_ADMIN) {
+        return true;
+    }
+    
+    // L'employé a accès à son rôle et au rôle client
+    if ($userRole === ROLE_EMPLOYEE) {
+        return in_array($requiredRole, [ROLE_EMPLOYEE, ROLE_CLIENT]);
+    }
+    
+    // Le client n'a accès qu'à son propre rôle
+    return $userRole === $requiredRole;
 }
 ?>
 
@@ -208,6 +226,54 @@ html {
                     <li class="active">
                         <a href="dashboard.php">
                             <i class="material-icons">home</i>
+                            <span>Tableau de bord</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Menu pour les administrateurs -->
+                    <?php if ($isAdmin): ?>
+                    <li>
+                        <a href="javascript:void(0);" class="menu-toggle">
+                            <i class="material-icons">supervisor_account</i>
+                            <span>Administration</span>
+                        </a>
+                        <ul class="ml-menu">
+                            <li><a href="admin/users.php">Gestion des utilisateurs</a></li>
+                            <li><a href="admin/settings.php">Paramètres</a></li>
+                            <li><a href="admin/audit_logs.php">Journal d'audit</a></li>
+                        </ul>
+                    </li>
+                    <?php endif; ?>
+                    
+                    <!-- Menu pour les employés -->
+                    <?php if ($isAdmin || $isEmployee): ?>
+                    <li>
+                        <a href="javascript:void(0);" class="menu-toggle">
+                            <i class="material-icons">business_center</i>
+                            <span>Gestion</span>
+                        </a>
+                        <ul class="ml-menu">
+                            <li><a href="employee/accounts.php">Comptes</a></li>
+                            <li><a href="employee/transactions.php">Transactions</a></li>
+                            <li><a href="employee/reports.php">Rapports</a></li>
+                        </ul>
+                    </li>
+                    <?php endif; ?>
+                    
+                    <!-- Menu pour les clients -->
+                    <li>
+                        <a href="javascript:void(0);" class="menu-toggle">
+                            <i class="material-icons">account_balance</i>
+                            <span>Mon Compte</span>
+                        </a>
+                        <ul class="ml-menu">
+                            <li><a href="client/overview.php">Aperçu</a></li>
+                            <li><a href="client/transactions.php">Mes transactions</a></li>
+                            <li><a href="client/transfer.php">Virement</a></li>
+                            <li><a href="client/profile.php">Mon profil</a></li>
+                        </ul>
+                    </li>
+                            <i class="material-icons">home</i>
                             <span>Home</span>
                         </a>
                     </li>
@@ -335,9 +401,124 @@ html {
     <section class="content" id="top">
         <div class="container-fluid">
             <div class="block-header">
-                <h2>DASHBOARD</h2>
+                <h2>TABLEAU DE BORD - <?php echo $userRole; ?></h2>
+                <small>Bienvenue, <?php echo htmlspecialchars($_SESSION['name'] ?? 'Utilisateur'); ?></small>
             </div>
-            <?php if($_SESSION["type"]=="Employee"){
+            
+            <!-- Messages de statut -->
+            <?php if (isset($_SESSION['status'])): ?>
+                <div class="alert alert-<?php echo $_SESSION['code'] ?? 'info'; ?> alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <?php 
+                    echo $_SESSION['status'];
+                    unset($_SESSION['status']);
+                    unset($_SESSION['code']);
+                    ?>
+                </div>
+            <?php endif; ?>
+            
+            <!-- Tableau de bord administrateur -->
+            <?php if ($isAdmin): ?>
+                <div class="row clearfix">
+                    <!-- Statistiques administrateur -->
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                        <div class="info-box bg-pink hover-expand-effect">
+                            <div class="icon">
+                                <i class="material-icons">people</i>
+                            </div>
+                            <div class="content">
+                                <div class="text">UTILISATEURS</div>
+                                <div class="number count-to" data-from="0" data-to="<?php echo r_format("SELECT COUNT(*) as total FROM users"); ?>" data-speed="1000" data-fresh-interval="20"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Autres statistiques administrateur... -->
+                </div>
+            <?php endif; ?>
+            
+            <!-- Tableau de bord employé -->
+            <?php if ($isEmployee): ?>
+                <div class="row clearfix">
+                    <!-- Statistiques employé -->
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                        <div class="info-box bg-light-green hover-expand-effect">
+                            <div class="icon">
+                                <i class="material-icons">account_balance_wallet</i>
+                            </div>
+                            <div class="content">
+                                <div class="text">COMPTES GÉRÉS</div>
+                                <div class="number count-to" data-from="0" data-to="<?php echo r_format("SELECT COUNT(*) as total FROM accounts_info WHERE assigned_to = '" . $_SESSION['id'] . "'"); ?>" data-speed="1000" data-fresh-interval="20"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Autres statistiques employé... -->
+                </div>
+            <?php endif; ?>
+            
+            <!-- Tableau de bord client -->
+            <?php if ($isClient): ?>
+                <div class="row clearfix">
+                    <!-- Solde du compte -->
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                        <div class="info-box bg-blue hover-expand-effect">
+                            <div class="icon">
+                                <i class="material-icons">account_balance</i>
+                            </div>
+                            <div class="content">
+                                <div class="text">SOLDE DISPONIBLE</div>
+                                <div class="number"><?php echo rup_format("SELECT balance as total FROM accounts_info WHERE user_id = '" . $_SESSION['id'] . "'"); ?></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Autres informations client... -->
+                </div>
+            <?php endif; ?>
+            
+            <!-- Contenu commun à tous les rôles -->
+            <div class="row clearfix">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="card">
+                        <div class="header">
+                            <h2>ACTIVITÉS RÉCENTES</h2>
+                        </div>
+                        <div class="body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped table-hover dataTable js-exportable">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Description</th>
+                                            <th>Montant</th>
+                                            <th>Statut</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        $sql = "SELECT * FROM account_history ";
+                                        $sql .= $isClient ? "WHERE account IN (SELECT account FROM accounts_info WHERE user_id = '" . $_SESSION['id'] . "') " : "";
+                                        $sql .= "ORDER BY date DESC LIMIT 10";
+                                        
+                                        $result = mysqli_query($con, $sql);
+                                        while($row = mysqli_fetch_assoc($result)) {
+                                            echo "<tr>";
+                                            echo "<td>" . htmlspecialchars($row['date']) . "</td>";
+                                            echo "<td>" . htmlspecialchars($row['description']) . "</td>";
+                                            echo "<td>" . number_format($row['amount'], 2) . " €</td>";
+                                            echo "<td><span class='label bg-green'>Complété</span></td>";
+                                            echo "</tr>";
+                                        }
+                                        ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <?php if ($isAdmin || $isEmployee): ?>
             ?>
             <div class="row clearfix">
                 
@@ -595,7 +776,8 @@ html {
                             $sql = "SELECT c.*, p.* FROM users c, emp_details p WHERE c.id = p.id AND c.role = 'Employee' ORDER BY p.hier_date DESC";
                         }
                         
-                        $result = db_query($sql);
+                        global $con;
+                       $result = mysqli_query($con, $sql);
                         if (!$result) {
                             $rows = [];
                         } else {
@@ -664,7 +846,8 @@ html {
                        <?php
                         $sql = "SELECT c.*, p.* FROM accounts_info c, accountsholder p WHERE c.account = p.account ORDER BY c.registerdate DESC";
                         
-                        $result = db_query($sql);
+                        global $con;
+                       $result = mysqli_query($con, $sql);
                         if (!$result) {
                             $rows = [];
                         } else {
@@ -741,7 +924,8 @@ html {
                        <?php
                         $sql = "SELECT c.*, p.* FROM accountsholder c, account_history p WHERE c.account = p.account ORDER BY no DESC";
                         
-                        $result = db_query($sql);
+                        global $con;
+                       $result = mysqli_query($con, $sql);
                         if (!$result) {
                             $rows = [];
                         } else {
