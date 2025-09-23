@@ -605,9 +605,7 @@ html {
                 </div>
             </div>
 
-            <?php
-            }else if($_SESSION["type"]=="Admin" || $_SESSION["type"]=="Default"){
-            ?>
+            <?php elseif($_SESSION["type"]=="Admin" || $_SESSION["type"]=="Default"): ?>
             <div class="row clearfix">
                 <?php
                 if($_SESSION["type"]=="Default"){
@@ -749,9 +747,7 @@ html {
                 </div>
             </div>
 
-            <?php
-            }
-            ?>
+            <?php endif; ?>
             <!-- #END# Widgets -->
             <!-- CPU Usage -->
             <!--  -->
