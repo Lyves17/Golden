@@ -1,8 +1,8 @@
 <?php
 $servername = "mysql-goldenaxe.alwaysdata.net";  // Hôte MySQL AlwaysData
-$username   = "goldenaxe";                       // Ton utilisateur DB AlwaysData
-$password   = "H95yks@uCXeqSiJ";                 // Ton mot de passe DB
-$dbname     = "goldenaxe_web_programming";       // Nom exact de ta base (vérifie dans phpMyAdmin !)
+$username   = "goldenaxe";                        // Ton utilisateur DB
+$password   = "H95yks@uCXeqSiJ";                  // Mot de passe correct
+$dbname     = "goldenaxe_db";                     // Nom exact de ta base
 
 // Crée la connexion
 $con = mysqli_connect($servername, $username, $password, $dbname);
