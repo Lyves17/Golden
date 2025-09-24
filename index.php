@@ -52,8 +52,8 @@ if(isset($_POST['log'])) {
     if ($result && mysqli_num_rows($result) > 0) {
         $row = mysqli_fetch_assoc($result);
 
-        // Vérification du mot de passe (non haché pour compatibilité)
-        if($row["password"] === $pass) {
+        // Vérification du mot de passe avec hash
+        if (password_verify($pass, $row["password"])) {
             if($row["status"] === "Active") {
                 // Initialiser la session
                 $_SESSION["loggedin"] = true;

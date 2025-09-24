@@ -1,14 +1,12 @@
 <?php
-$servername = "mysql-goldenaxe.alwaysdata.net";  // Hôte MySQL AlwaysData
-$username   = "goldenaxe";                        // Ton utilisateur DB
-$password   = "H95yks@uCXeqSiJ";                  // Mot de passe correct
-$dbname     = "goldenaxe_db";                     // Nom exact de ta base
+$servername = "mysql-goldenaxe.alwaysdata.net";
+$username   = "goldenaxe";
+$password   = "H95yks@uCXeqSiJ";
+$dbname     = "goldenaxe_db";
 
-// Crée la connexion
 $con = mysqli_connect($servername, $username, $password, $dbname);
 
-// Vérifie la connexion
 if (!$con) {
-    die("Connexion échouée : " . mysqli_connect_error());
+    die("Erreur connexion MySQL : " . mysqli_connect_error());
 }
 ?>

@@ -468,7 +468,7 @@ html {
                             </div>
                             <div class="content">
                                 <div class="text">SOLDE DISPONIBLE</div>
-                                <div class="number"><?php echo rup_format("SELECT balance as total FROM accounts_info WHERE user_id = '" . $_SESSION['id'] . "'"); ?></div>
+                                <div class="number"><?php echo rup_format("SELECT balance as total FROM accounts_info WHERE id = '" . $_SESSION['id'] . "'"); ?></div>
                             </div>
                         </div>
                     </div>
@@ -497,7 +497,7 @@ html {
                                     <tbody>
                                         <?php
                                         $sql = "SELECT * FROM account_history ";
-                                        $sql .= $isClient ? "WHERE account IN (SELECT account FROM accounts_info WHERE user_id = '" . $_SESSION['id'] . "') " : "";
+                                        $sql .= $isClient ? "WHERE account IN (SELECT account FROM accounts_info WHERE id = '" . $_SESSION['id'] . "') " : "";
                                         $sql .= "ORDER BY date DESC LIMIT 10";
                                         
                                         $result = mysqli_query($con, $sql);
